@@ -5,29 +5,32 @@ var gLastRes = null;
 
 $(document).ready(init);
 $('.btn-start').click(onStartGuessing);
-$('.btn-yes').click({ans: 'yes'}, onUserResponse);
-$('.btn-no').click({ans: 'no'}, onUserResponse);
+$('.btn-yes').click({ ans: 'yes' }, onUserResponse);
+$('.btn-no').click({ ans: 'no' }, onUserResponse);
 $('.btn-add-guess').click(onAddGuess);
 
 function init() {
   console.log('Started...');
   createQuestsTree();
+  resetGame()
 }
 
 function onStartGuessing() {
-  // TODO: hide the game-start section
+  // hide the game-start section
+  $('.game-start').hide('slow')
 
   renderQuest();
-  // TODO: show the quest section
+  //show the quest section
+  $('.quest').show()
 }
 
 function renderQuest() {
-  // TODO: select the <h2> inside quest and update
+  // select the <h2> inside quest and update
   // its text by the currQuest text
+  $('.quest h2').text(gCurrQuest.txt)
 }
 
 function onUserResponse(ev) {
-  console.log('ev', ev);
   var res = ev.data.ans;
   // If this node has no children
   if (isChildless(getCurrQuest())) {
@@ -36,28 +39,31 @@ function onUserResponse(ev) {
       // TODO: improve UX
     } else {
       alert('I dont know...teach me!');
-      // TODO: hide and show new-quest section
+      // hide and show new-quest section
+      $('.quest').hide('slow')
+      $('.new-quest').show('slow')
     }
   } else {
-    // TODO: update the lastRes global var
-    moveToNextQuest();
+    // update the lastRes global var
+    gLastRes = res
+    moveToNextQuest(res);
     renderQuest();
   }
 }
 
 function onAddGuess(ev) {
   ev.preventDefault();
+  // Get the inputs' values
   var newGuess = $('#newGuess').val();
   var newQuest = $('#newQuest').val();
 
-  // TODO: Get the inputs' values
-  // TODO: Call the service addGuess
-
+  // Call the service addGuess
+  addGuess(newQuest, newGuess, gLastRes)
   onRestartGame();
 }
 
 function onRestartGame() {
   $('.new-quest').hide();
   $('.game-start').show();
-  gLastRes = null;
+  resetGame()
 }
